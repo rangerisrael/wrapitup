@@ -6,6 +6,7 @@ if(!isset($_GET['id'])) {
 
 if(get_specific_products($_GET['id'])->num_rows > 0) {
     $product      = get_specific_products($_GET['id'])->fetch_assoc();
+ 
     $category     = get_specific_category($product['product_categories_id'])->fetch_assoc();
     $sub_category = get_specific_sub_category($product['product_sub_categories_id'])->fetch_assoc();
 } else {
@@ -18,6 +19,7 @@ if(isset($_GET['add-to-cart-details']) == true) {
 }
 
 ?>
+
 
 <body>
     <div class="site-wrapper">
@@ -75,13 +77,73 @@ if(isset($_GET['add-to-cart-details']) == true) {
                                 <!-- Rating Block -->
                                 <div class="rating-block d-flex  mt--10 mb--15">
                                     <div class="rating-widget">
-                                        <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
-                                        <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
-                                        <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
-                                        <a href="#" class="single-rating"><i class="fas fa-star-half-alt"></i></a>
-                                        <a href="#" class="single-rating"><i class="far fa-star"></i></a>
+                                        <?php 
+                                                   
+                                                      for ($i=1; $i <= count_reviewsbyProduct($product['title']) && count_reviewsbyProduct($product['title']) <= 5; $i++) { 
+
+
+                                                    
+                                                            ?>
+                                                     <span class="single-rating"><i class="fas fa-star"></i></span>
+                                                    
+                                                     <?php
+                                                            
+                                                    
+
+                                                      }
+                                                     
+                                     ?>
+
+
+                                         <?php 
+                                                    $startWhite = 5 - count_reviewsbyProduct($product['title']);
+                                                      for ($i=1; $i <=$startWhite && $startWhite <= 5; $i++) { 
+
+
+                                                       
+                                                            ?>
+                                                     <span class="single-rating"><i class="far fa-star"></i></span>
+                                                    
+                                                     <?php
+                                                            
+                                                          
+
+                                                    
+                                                       
+
+                                                      }
+                                                     
+                                            ?>
+                                       <?php 
+                                                    $star = count_reviewsbyProduct($product['title']);
+
+                                                      if($star > 5){
+
+                                                      for ($i=1; $i <= 5; $i++) { 
+
+
+                                                       
+                                                            ?>
+                                                     <span class="single-rating"><i class="fas fa-star"></i></span>
+                                                    
+                                                     <?php
+                                                            
+                                                          
+
+                                                    
+                                                       
+
+                                                      }
+                                                      }
+
+
+                                                     
+                                            ?>
+                                    
                                     </div>
-                                    <p class="rating-text"><a href="#comment-form">(1 customer review)</a></p>
+                                                
+
+                                    <p class="rating-text"><a href="#comment-form">(<?php echo count_reviewsbyProduct($product['title']) ?> customer review)</a></p>
 
 
                                 </div>
@@ -92,10 +154,10 @@ if(isset($_GET['add-to-cart-details']) == true) {
 
                                 <!-- Price -->
                                 <?php if($product['discount'] != 0) { ?>
-                                <p class="price"><span class="old-price">₱<?=number_format($product['price'],2)?></span>₱<?=number_format($product['price'] - ($product['price'] * ($product['discount'] / 100)) ,2)?></p>
+                                <p class="price"><span class="old-price">AED<?=number_format($product['price'],2)?></span>AED<?=number_format($product['price'] - ($product['price'] * ($product['discount'] / 100)) ,2)?></p>
                                     <span class="old"></span>
                                 <?php } else { ?>
-                                <p class="price" style="color:#000">₱<?=number_format($product['price'],2)?></p>
+                                <p class="price" style="color:#000">AED<?=number_format($product['price'],2)?></p>
                                 <?php } ?>
                                 <!-- Blog Short Description -->
                                 <div class="product-short-para">
@@ -138,7 +200,7 @@ if(isset($_GET['add-to-cart-details']) == true) {
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab"
-                                        aria-controls="profile" aria-selected="false">REVIEWS (1)</a>
+                                        aria-controls="profile" aria-selected="false">REVIEWS (<?php echo count_reviewsbyProduct($product['title']) ?>)</a>
                                 </li>
                             </ul>
                             <div class="tab-content" id="myTabContent">
@@ -153,78 +215,138 @@ if(isset($_GET['add-to-cart-details']) == true) {
                                 </div>
                                 <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                                     <div class="review-wrapper">
-                                        <h2 class="title-lg mb--20">1 REVIEW FOR AUCTOR GRAVIDA ENIM</h2>
+                                        <h2 class="title-lg mb--20"><?php echo count_reviewsbyProduct($product['title']) ?>  REVIEW FOR  <?=$product['title']?></h2>
+
+                                        <?php foreach (getAllReviewsById($product['title']) as $productReview) {
+                                      ?>
                                         <div class="review-comment mb--20">
                                             <div class="avatar">
                                                 <img src="assets/image/icon-logo/author-logo.png" alt="">
                                             </div>
                                             <div class="text">
                                                 <div class="rating-widget mb--15">
-                                                    <span class="single-rating"><i class="fas fa-star"></i></span>
-                                                    <span class="single-rating"><i class="fas fa-star"></i></span>
-                                                    <span class="single-rating"><i class="fas fa-star"></i></span>
+                                                    <?php 
+                                                   
+                                                      for ($i=1; $i <= $productReview['ratings']; $i++) { 
+
+
+                                                    
+                                                            ?>
+                                                     <span class="single-rating"><i class="fas fa-star"></i></span>
+                                                    
+                                                     <?php
+                                                            
+                                                    
+
+                                                      }
+                                                     
+                                                    ?>
+
+                                                    <?php 
+                                                    $startWhite = 5 - $productReview['ratings'];
+                                                      for ($i=1; $i <=$startWhite ; $i++) { 
+
+
+                                                       
+                                                            ?>
+                                                     <span class="single-rating"><i class="far fa-star"></i></span>
+                                                    
+                                                     <?php
+                                                            
+                                                          
+
+                                                    
+                                                       
+
+                                                      }
+                                                     
+                                                    ?>
+
+                                                     
+                                                 
+                                                    <!-- <span class="single-rating"><i class="fas fa-star"></i></span>
                                                     <span class="single-rating"><i
-                                                            class="fas fa-star-half-alt"></i></span>
-                                                    <span class="single-rating"><i class="far fa-star"></i></span>
+                                                            class="fas fa-star-half-alt"></i></span> -->
+                                                    <!-- <span class="single-rating"><i class="far fa-star"></i></span> -->
+                                                    <span class="single-rating"><?php echo $productReview['ratings'] ?> / 5</span>
                                                 </div>
-                                                <h6 class="author">ADMIN – <span class="font-weight-400">March 23,
-                                                        2015</span> </h6>
-                                                <p>Lorem et placerat vestibulum, metus nisi posuere nisl, in accumsan
-                                                    elit
-                                                    odio quis mi.</p>
+                                                		<label  for="upload">
+                                                              <?php 
+                                                            if(str_contains($productReview['filetype'],'image')){
+                                                                ?>
+                                                         
+                                                            <img  data-toggle="modal" data-target="#imagePreview" onclick="getReviewThumbnailImage('<?php  echo $productReview['filename']  ?>')"  src="assets/review/image/<?php echo $productReview['filename'] ?>" class="img-fluid img-thumbnail" id='photoReview' width='150' height='150' alt="...">
+
+                                                           <?php     
+                                                            }
+                                                           
+                                                           ?>
+                                                           <?php 
+                                                            if(str_contains($productReview['filetype'],'video')){
+                                                                ?>
+                                                         <video class='col-12 d-flex flex-row justify-content-end d-block d-sm-none' data-toggle="modal" onclick="getReviewThumbnailVid('<?php  echo $productReview['filename']  ?>')"    data-target="#videoPreview"   width='100%' height='100%' id='videoReview'  muted >
+                                                                <source src='assets/review/video-clip/<?php echo $productReview['filename'] ?>' />
+                                                                Your browser does not support HTML5 video.
+                                                            </video>
+                                                             <video class='col-12 d-none d-sm-block' data-toggle="modal" onclick="getReviewThumbnailVid('<?php  echo $productReview['filename']  ?>')"    data-target="#videoPreview"   width='150' height='150' id='videoReview'  muted >
+                                                                <source src='assets/review/video-clip/<?php echo $productReview['filename'] ?>' />
+                                                                Your browser does not support HTML5 video.
+                                                            </video>
+                                                           <?php     
+                                                            }
+                                                           
+                                                           ?>
+                                                        </label/>
+                                                <h6 class="author"><?php echo $productReview['name'] ?> – <span id='dateTime' class="font-weight-400" data-time='<?php echo $productReview['created_at'] ?>'></span> </h6>
+                                                <p><?php  echo $productReview['comment'] ?></p>
                                             </div>
                                         </div>
-                                        <h2 class="title-lg mb--20 pt--15">ADD A REVIEW</h2>
-                                        <div class="rating-row pt-2">
-                                            <p class="d-block">Your Rating</p>
-                                            <span class="rating-widget-block">
-                                                <input type="radio" name="star" id="star1">
-                                                <label for="star1"></label>
-                                                <input type="radio" name="star" id="star2">
-                                                <label for="star2"></label>
-                                                <input type="radio" name="star" id="star3">
-                                                <label for="star3"></label>
-                                                <input type="radio" name="star" id="star4">
-                                                <label for="star4"></label>
-                                                <input type="radio" name="star" id="star5">
-                                                <label for="star5"></label>
-                                            </span>
-                                            <form action="./" class="mt--15 site-form ">
-                                                <div class="row">
-                                                    <div class="col-12">
-                                                        <div class="form-group">
-                                                            <label for="message">Comment</label>
-                                                            <textarea name="message" id="message" cols="30" rows="10"
-                                                                class="form-control"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6">
-                                                        <div class="form-group">
-                                                            <label for="name">Name *</label>
-                                                            <input type="text" id="name" class="form-control">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6">
-                                                        <div class="form-group">
-                                                            <label for="email">Email *</label>
-                                                            <input type="text" id="email" class="form-control">
-                                                        </div>
-                                                    </div>
+                                      <?php
+                                        }
+                                        ?>
 
-                                                    <div class="col-lg-12">
-                                                        <div class="submit-btn">
-                                                            <a href="#" class="btn btn-success  ">Post Comment</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
+
+                                        
+                                     
+                                            
+                                    
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
+
+                <!-- Modal -->
+<div class="modal fade" id="imagePreview" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+       <div class="modal-body">
+      <img src="" class="img-fluid img-thumbnail" id='imageReview' width='100%' height='100%' alt="...">
+                                        
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="videoPreview" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+     
+      </div>
+      <div class="modal-body">
+     <video class="embed-responsive-item"  width='100%' height='100%' id='videoReviewed' autoplay muted controls>
+        <source src='' />
+        Your browser does not support HTML5 video.
+      </video>
+      </div>
+     
+    </div>
+  </div>
+  
+</div>
+<!-- end produc review -->
+
                 <section>
                     <div class="pt--50">
                         <div class="container">
@@ -257,10 +379,10 @@ if(isset($_GET['add-to-cart-details']) == true) {
                                             <div class="price">
                                                 <!-- <span class="old">$200</span> -->
                                                 <?php if($related['discount'] != 0) { ?>
-                                                <p class="price"><span class="old-price">₱<?=number_format($related['price'],2)?></span>₱<?=number_format($related['price'] - ($related['price'] * ($related['discount'] / 100)) ,2)?></p>
+                                                <p class="price"><span class="old-price">AED<?=number_format($related['price'],2)?></span>AED<?=number_format($related['price'] - ($related['price'] * ($related['discount'] / 100)) ,2)?></p>
                                                     <span class="old"></span>
                                                 <?php } else { ?>
-                                                <p class="price" style="color:#000">₱<?=number_format($related['price'],2)?></p>
+                                                <p class="price" style="color:#000">AED<?=number_format($related['price'],2)?></p>
                                                 <?php } ?>
                                             </div>
                                             <div class="btn-block">
@@ -281,11 +403,46 @@ if(isset($_GET['add-to-cart-details']) == true) {
         <?php include 'layouts/footer.php';?>
     </div>
     <?php include 'layouts/scripts.php';?>
+   <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.43/moment-timezone.min.js"></script>
+   	  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	
+  
     <script>
         document.getElementsByTagName('meta')["keywords"].content = "<?=$product['meta_keywords']?>";
         document.getElementsByTagName('meta')["description"].content = "<?=$product['meta_description']?>";
         document.title = "<?=$product['title']?>";
+
+
+      var datasetTime = document.querySelectorAll('#dateTime');
+
+      datasetTime.forEach(item => {
+            item.textContent = moment(item.dataset.time).fromNow();
+
+            //poduction this code is working
+           // item.textContent =   moment.tz(item.dataset.time , "CurrentTimeZone").tz('RequiredTimeZon').fromNow();
+      });
+
+      function getReviewThumbnailImage(imageSrc){
+       document.getElementById('imageReview').src = `assets/review/image/${imageSrc}`;
+       console.log('test',imageSrc)
+    }
+
+       function getReviewThumbnailVid(videoSrc){
+
+
+        let video =  document.getElementById('videoReviewed');
+
+
+       video.src = `assets/review/video-clip/${videoSrc}`;
+       
+    }
+
+
     </script>
+    
 </body>
 
 </html>

@@ -54,6 +54,7 @@ if(isset($_GET['search']) == true) {
     <link rel="stylesheet" href="assets/css/plugins.css" />
     <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="shortcut icon" type="image/x-icon" href="assets/image/wrapitup-logo.jpg">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-DWTCPK0QT1"></script>
     <script>
@@ -65,4 +66,6 @@ if(isset($_GET['search']) == true) {
     </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7006703530854355"
      crossorigin="anonymous"></script>
+     
+     
 </head>

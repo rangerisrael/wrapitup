@@ -247,15 +247,15 @@ if(isset($_POST['btn_place_order'])) {
                                                             <span class="left"><?=$cart['title']?> X
                                                                 <?=$cart['quantity']?></span>
                                                             <span
-                                                                class="right">₱<?=number_format($cart['price'] * $cart['quantity'],2)?></span>
+                                                                class="right">AED<?=number_format($cart['price'] * $cart['quantity'],2)?></span>
                                                         </li>
                                                         <?php } ?>
                                                     </ul>
 
-                                                    <p>Sub Total <span>₱<?=number_format($total,2)?></span></p>
-                                                    <p>Shipping Fee <span>₱<?=number_format(0,2)?></span></p>
+                                                    <p>Sub Total <span>AED<?=number_format($total,2)?></span></p>
+                                                    <p>Shipping Fee <span>AED<?=number_format(0,2)?></span></p>
 
-                                                    <h4>Grand Total <span>₱<?=number_format($total + 0,2)?></span></h4>
+                                                    <h4>Grand Total <span>AED<?=number_format($total + 0,2)?></span></h4>
                                                     <div class="mb--25 mt--25">
                                                         <i class="fas fa-cash2 fa-fw"></i>
                                                         <div class="radio-toolbar">

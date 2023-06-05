@@ -14,4 +14,30 @@
             icon: '<?=$_GET['success'] == 'false' ? 'error' : 'success'?>',
         })
     <?php }  ?>
+
+    function successMessage(){
+        Swal.fire({
+        position: 'top-end',
+        icon: 'success',
+        title: 'Thanks for submitting your review to us,Hope we give our best to serve you',
+        showConfirmButton: false,
+        timer: 1500
+        })
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
+    }
+    function failedMessage(message){
+          Swal.fire({
+        position: 'top-end',
+        icon: 'error',
+        title: message,
+        showConfirmButton: false,
+        timer: 2000
+        })
+
+    }
+
+
+
 </script>

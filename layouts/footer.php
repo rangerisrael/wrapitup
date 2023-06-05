@@ -7,13 +7,16 @@
                             <div class="single-footer-content">
                                 <p class="text-italic">We are a company of high quality products.</p>
                                 <p class="font-weight-500 text-white"><span class="d-block">Contact info:</span>
-                                    169-C, QUezon City Philippines 1127.</p>
+                                    +971 4 457 1539 <br>
+                                    Box Park, Al Wasl, Dubai, United Arab Emirates</p>
                                 <p class="social-icons">
-                                    <a href=""><i class="fab fa-facebook-f"></i></a>
+                                 <!--    <a href=""><i class="fab fa-facebook-f"></i></a>
                                     <a href=""><i class="fab fa-twitter"></i></a>
-                                    <a href=""><i class="fab fa-instagram"></i></a>
-                                    <a href=""><i class="fab fa-linkedin-in"></i></a>
-                                    <a href=""><i class="fas fa-rss"></i></a>
+ -->                                  
+                                     <a href="https://www.instagram.com/hedi.ae/"><i class="fab fa-instagram"></i></a>
+                                     <a href="assets/app/wrapitup.apk" download="wrapitup.apk"><i><span>&nbsp;Download Apk</i> </span><img src='assets/image/wrapitup-logo.jpg' width='25' height='25'/></a>
+                                    <!-- <a href=""><i class="fab fa-linkedin-in"></i></a>
+                                    <a href=""><i class="fas fa-rss"></i></a> -->
                                 </p>
                             </div>
                         </div>
@@ -50,7 +53,7 @@
                             </div>
                         </div>
                     </div> -->
-                    <div class="col-lg-4 col-md-6">
+                   <!--  <div class="col-lg-4 col-md-6">
                         <div class="single-footer contact-block">
                             <h3 class="footer-title">SUBSCRIBE TO OUR NEWSLETTER</h3>
                             <div class="single-footer-content">
@@ -67,7 +70,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="footer-block-2 text-center">
                     <ul class="footer-list list-inline justify-content-center">

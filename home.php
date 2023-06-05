@@ -173,10 +173,10 @@
                                         <h3><?=$featured['title']?></h3>
                                         <div class="price">
                                             <?php if($featured['discount'] != 0) { ?>
-                                                <span class="old">₱<?=number_format($featured['price'],2)?></span>
+                                                <span class="old">AED<?=number_format($featured['price'],2)?></span>
                                             <?php } else { ?>
                                             <?php } ?>
-                                        <span>₱<?=number_format($featured['price'] - ($featured['price'] * ($featured['discount'] / 100)) ,2)?></span>
+                                        <span>AED<?=number_format($featured['price'] - ($featured['price'] * ($featured['discount'] / 100)) ,2)?></span>
                                         </div>
                                         <div class="btn-block">
                                             <a href="?add-to-cart=true&id=<?=$featured['id']?>&success=true&message=<?=urlencode('Item has added to your cart')?>""
@@ -243,10 +243,10 @@
                                         <h3><?=$product['title']?></h3>
                                         <div class="price">
                                         <?php if($product['discount'] != 0) { ?>
-                                            <span class="old">₱<?=number_format($product['price'],2)?></span>
+                                            <span class="old">AED<?=number_format($product['price'],2)?></span>
                                         <?php } else { ?>
                                         <?php } ?>
-                                        <span>₱<?=number_format($product['price'] - ($product['price'] * ($product['discount'] / 100)) ,2)?></span>
+                                        <span>AED<?=number_format($product['price'] - ($product['price'] * ($product['discount'] / 100)) ,2)?></span>
                                         </div>
                                         <div class="btn-block">
                                             <a href="?add-to-cart=true&id=<?=$product['id']?>&success=true&message=<?=urlencode('Item has added to your cart')?>"
@@ -269,11 +269,11 @@
             <section class="pt--50 mb--5 space-db--30">
                 <h2 class="d-none">Promotion Block
                 </h2>
-                <div class="container">
+              <!--   <div class="container">
                     <a class="promo-image overflow-image">
                         <img src="assets/image/advertisement/1100x150.png" alt="">
                     </a>
-                </div>
+                </div> -->
             </section>
 
         </div>

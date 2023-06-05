@@ -50,7 +50,7 @@
 												<td class="pro-remove"><a href="?remove-cart=true&id=<?=$cart['id']?>"><i class="far fa-trash-alt"></i></a></td>
 												<td class="pro-thumbnail"><a href="javascript:void(0)"><img src="assets/image/product/home-1/product-1.jpg" alt="Product"></a></td>
 												<td class="pro-title"><a href="javascript:void(0)"><?=$cart['title']?></a></td>
-												<td class="pro-price"><span>₱<?=number_format($cart['price'],2)?></span></td>
+												<td class="pro-price"><span>AED<?=number_format($cart['price'],2)?></span></td>
 												<td class="pro-quantity">
 													<div class="pro-qty" style="width:100px">
 														<div class="count-input-block">
@@ -59,7 +59,7 @@
 														</div>
 													</div>
 												</td>
-												<td class="pro-subtotal"><span>₱<?=number_format($cart['price'] * $cart['quantity'],2)?></span></td>
+												<td class="pro-subtotal"><span>AED<?=number_format($cart['price'] * $cart['quantity'],2)?></span></td>
 											</tr>
 										<?php } ?>
 										
@@ -71,7 +71,7 @@
                                                     Sub Total
 											</td>
 											<td class="actions">
-											₱<?=number_format($total,2)?>
+											AED<?=number_format($total,2)?>
 											</td>
 										</tr>
 

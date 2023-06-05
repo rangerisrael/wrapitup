@@ -118,10 +118,10 @@
 							<tr>
 								<td style="width:1px"><?=$i++?></td>
 								<td><?=$orders['product']?></td>
-								<td style="width:1px;text-align:right">₱<?=number_format($orders['price'],2)?></td>
+								<td style="width:1px;text-align:right">AED<?=number_format($orders['price'],2)?></td>
 								<td style="width:1px;text-align:center"><?=$orders['quantity']?></td>
 								<td style="width:1px;text-align:right">
-									₱<?=number_format($orders['price'] * $orders['quantity'],2)?></td>
+									AED<?=number_format($orders['price'] * $orders['quantity'],2)?></td>
 							</tr>
 							<?php } ?>
 						</tbody>
@@ -129,7 +129,7 @@
 							<tr>
 								<td colspan=3></td>
 								<td></td>
-								<td style="width:1px;text-align:right">₱<?=number_format($total,2)?></td>
+								<td style="width:1px;text-align:right">AED<?=number_format($total,2)?></td>
 							</tr>
 						</tfoot>
 					</table>
