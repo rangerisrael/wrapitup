@@ -48,10 +48,10 @@
                                 <h3 class="font-weight-500"><a href="product-details.php"><?=$product['title']?></a></h3>
                                 <div class="price ">
                                     <?php if($product['discount'] != 0) { ?>
-                                        <span class="old">₱<?=number_format($product['price'],2)?></span>
+                                        <span class="old">AED<?=number_format($product['price'],2)?></span>
                                     <?php } else { ?>
                                     <?php } ?>
-                                    <span>₱<?=number_format($product['price'] - ($product['price'] * ($product['discount'] / 100)) ,2)?></span>
+                                    <span>AED<?=number_format($product['price'] - ($product['price'] * ($product['discount'] / 100)) ,2)?></span>
                                 </div>
                                 <div class="btn-block grid-btn">
                                     <a href="?add-to-cart=true&id=<?=$product['id']?>" class="btn btn-outlined btn-rounded btn-mid" tabindex="0">Add to
@@ -72,10 +72,10 @@
                                     <div class="btn-block d-flex">
                                         <a href="?add-to-cart=true&id=<?=$product['id']?>" class="btn btn-outlined btn-rounded btn-mid"
                                             tabindex="0">Add to Cart</a>
-                                        <div class="btn-options">
+                                        <!-- <div class="btn-options">
                                             <a href="wishlist.php?id=<?=$product['id']?>"><i class="ion-ios-heart-outline"></i>Add to
                                                 Wishlist</a>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>

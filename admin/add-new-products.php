@@ -92,7 +92,7 @@ if(isset($_POST['btn_create_product'])) {
                                             <td><?=$products['title']?></td>
                                             <td><?=$category?></td>
                                             <td><?=$sub_category?></td>
-                                            <td>₱<?=number_format($products['price'],2)?></td>
+                                            <td>AED<?=number_format($products['price'],2)?></td>
                                             <td><?=$products['stocks']?></td>
                                             <td><?=$products['discount']?>%</td>
                                             <td><?=$products['is_featured'] == 0 ? 'No' : 'Yes';?></td>

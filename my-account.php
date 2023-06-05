@@ -205,7 +205,11 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 														<input id="address" placeholder="Address"value="<?=$address?>" name="billing_address" type="text" required>
 													</div>
 
-													<div class="col-12">
+													
+														<div class="col-12 d-flex flex-row justify-content-end d-block d-sm-none">
+														<button type="submit" name="btn_account_billing" class="theme-btn">Save Changes</button>
+													</div>
+													<div class="col-12 d-none d-sm-block">
 														<button type="submit" name="btn_account_billing" class="theme-btn">Save Changes</button>
 													</div>
 
@@ -256,9 +260,15 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 														<input id="address" placeholder="Address" value="<?=$shipAddress?>" name="shipping_address" type="text" required>
 													</div>
 
-													<div class="col-12">
+												
+															<div class="col-12 d-flex flex-row justify-content-end d-block d-sm-none">
 														<button type="submit" name="btn_account_shipping" class="theme-btn">Save Changes</button>
 													</div>
+													<div class="col-12 d-none d-sm-block">
+														<button type="submit" name="btn_account_shipping" class="theme-btn">Save Changes</button>
+													</div>
+
+													
 
 												</div>
 											</form>
@@ -293,22 +303,22 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 													</div>
 
 
-													<div class="col-6 mb-30">
+													<div class="col-md-6 col-sm-12 mb-30">
 														<input id="birthday" placeholder="Birth Date" value="<?=$user['birthday']?>" name="birthday" type="date">
 													</div>
 
-													<div class="col-2 mb-30 ">
+													<div class="col-md-2 col-sm-12 mb-30 ">
 														<input readonly class="text-center" placeholder="Age" id="age" value="<?=$user['age']?>" name="age" type="text">
 													</div>
 
-													<div class="col-2 mb-30 ">
+													<div class="col-md-2 col-sm-12 mb-30 ">
 														<select name="gender" class="form-control" style="height:50px">
 															<option value="Male" <?=$user['gender'] == 'Male' ? 'selected' : ''?>>Male</option>
 															<option value="Female" <?=$user['gender'] == 'Female' ? 'selected' : ''?>>Female</option>
 														</select>
 													</div>
 
-													<div class="col-2 mb-30 ">
+													<div class="col-md-2 col-sm-12 mb-30 ">
 														<select name="marital" class="form-control" style="height:50px">
 															<option value="Single"   <?=$user['marital'] == 'Single' ? 'selected' : ''?>>Single</option>
 															<option value="Married"  <?=$user['marital'] == 'Married' ? 'selected' : ''?>>Married</option>
@@ -317,7 +327,10 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 														</select>
 													</div>
 
-													<div class="col-12">
+													<div class="col-12 d-flex flex-row justify-content-end d-block d-sm-none">
+														<button type="submit" name="btn_account_details" class="theme-btn">Save Changes</button>
+													</div>
+													<div class="col-12 d-none d-sm-block">
 														<button type="submit" name="btn_account_details" class="theme-btn">Save Changes</button>
 													</div>
 
@@ -347,7 +360,11 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 														<input id="confirm-pwd" placeholder="Confirm Password" name="confirm_new_password" type="password">
 													</div>
 
-													<div class="col-12">
+													
+													<div class="col-12 d-flex flex-row justify-content-end d-block d-sm-none">
+														<button type="submit" name="btn_change_password" class="theme-btn">Save Changes</button>
+													</div>
+													<div class="col-12 d-none d-sm-block">
 														<button type="submit" name="btn_change_password" class="theme-btn">Save Changes</button>
 													</div>
 

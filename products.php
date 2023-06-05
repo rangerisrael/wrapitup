@@ -51,11 +51,74 @@
                                 </div>
                                 <div class="card-list-content ">
                                     <div class="rating-widget ">
+                                           <?php 
+                                                   
+                                                      for ($i=1; $i <= count_reviewsbyProduct($product['title']) && count_reviewsbyProduct($product['title']) <= 5; $i++) { 
+
+
+                                                    
+                                                            ?>
+                                                     <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
+
+                                                    
+                                                     <?php
+                                                            
+                                                    
+
+                                                      }
+                                                     
+                                      ?>
+                                           <?php 
+                                                    $startWhite = 5 - count_reviewsbyProduct($product['title']);
+                                                      for ($i=1; $i <=$startWhite && $startWhite <= 5; $i++) { 
+
+
+                                                       
+                                                            ?>
+                                                  <a href="#" class="single-rating"><i class="far fa-star"></i></a>
+
+                                                    
+                                                     <?php
+                                                            
+                                                          
+
+                                                    
+                                                       
+
+                                                      }
+                                                     
+                                            ?>
+                                         <?php 
+                                                    $star = count_reviewsbyProduct($product['title']);
+
+                                                      if($star > 5){
+
+                                                      for ($i=1; $i <= 5; $i++) { 
+
+
+                                                       
+                                                            ?>
+                                                      <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
+
+                                                     <?php
+                                                            
+                                                          
+
+                                                    
+                                                       
+
+                                                      }
+                                                      }
+
+
+                                                     
+                                            ?>
+                                    <span class="rating-text"><a href="#comment-form">(<?php echo count_reviewsbyProduct($product['title']) ?> customer review)</a></span>
+                                    
+                                        <!-- <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
                                         <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
                                         <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
-                                        <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
-                                        <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
-                                        <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
+                                        <a href="#" class="single-rating"><i class="fas fa-star"></i></a> -->
                                     </div>
                                     <article>
                                         <h3 class="d-none sr-only">Article</h3>

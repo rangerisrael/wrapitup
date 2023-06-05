@@ -33,8 +33,7 @@
                         <div class="header-widget-2 text-center text-sm-end ">
                             <div class="call-widget">
                                 <p>CALL US NOW: <br><i class="icon ion-ios-telephone"></i><span
-                                        class="font-weight-mid">+91-012
-                                        345 678</span></p>
+                                        class="font-weight-mid">+971 4 457 1539</span></p>
                             </div>
                         </div>
                     </div>
@@ -143,7 +142,7 @@
                                 </div>
                                 <div class="cart-text">
                                     <span class="d-block">Your cart</span>
-                                    <strong><span class="amount"><span class="currencySymbol">₱</span><?=number_format(isset($total) ? $total : 0,2)?></span></strong>
+                                    <strong><span class="amount"><span class="currencySymbol">AED</span><?=number_format(isset($total) ? $total : 0,2)?></span></strong>
                                 </div>
                             </div>
                             <div class="slide-down--item ">
@@ -164,7 +163,7 @@
                                                 <div class="product-details">
                                                     <h4 class="product-details--title"> <?=$cart['title']?></h4>
                                                     <span class="product-details--price"><?=$cart['quantity']?> x
-                                                        ₱<?= number_format($cart['price'] * $cart['quantity'],2) ?></span>
+                                                        AED<?= number_format($cart['price'] * $cart['quantity'],2) ?></span>
                                                 </div>
                                                 <span onclick="remove('<?=$cart['id']?>')" class="cart-cross">x</span>
                                             </a>
@@ -177,7 +176,7 @@
                                         <li class="single-cart">
                                             <div class="cart-product__subtotal">
                                                 <span class="subtotal--title">Subtotal</span>
-                                                <span class="subtotal--price">₱<?=number_format($total,2)?></span>
+                                                <span class="subtotal--price">AED<?=number_format($total,2)?></span>
                                             </div>
                                         </li>
                                         <li class="single-cart">

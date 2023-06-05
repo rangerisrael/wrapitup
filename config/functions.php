@@ -831,3 +831,87 @@ function get_all_maritals() {
     $query = $db->query("SELECT * FROM accounts GROUP BY marital");
     return $query;
 }
+
+function getAllReviewsById($product_name) {
+    global $db;
+    $query = $db->query("SELECT * FROM reviews WHERE product_name = '$product_name'");
+    return $query;
+}
+
+
+function getAllReviews(){
+     global $db;
+    $query = $db->query("SELECT * FROM reviews");
+    return $query;
+}
+
+
+function deleteReview($id) {
+    global $db;
+
+    $check = $db->query("SELECT * FROM reviews WHERE id= '$id' ");
+
+    if($check->num_rows > 0) {   
+       $query = $db->query("DELETE FROM reviews WHERE id = $id");
+        if($query) {
+                    echo json_encode(array("response" => 'valid'));
+        }
+        else{
+                echo json_encode(array("response" => 'invalid'));
+        }
+    } else {
+                echo json_encode(array("response" => 'notfound'));
+      
+    }
+
+}
+
+
+function count_reviewsbyProduct($product_name) {
+    global $db;
+    $query = $db->query("SELECT * FROM reviews WHERE product_name = '$product_name' ");
+    return $query->num_rows;
+}
+
+function validateReviewExisting($transcId){
+       global $db;
+    $check = $db->query("SELECT * FROM reviews WHERE transaction_id= '$transcId' ");
+
+    if($check->num_rows > 0) {   
+      return false;
+    } else {
+      return true;
+    }
+}
+
+function save_reviews($transcId,$transcName,$name,$email,$ratings,$reviews,$fileName,$fileType){
+     global $db;
+
+    $check = validateReviewExisting($transcId);
+        
+    if($check === false){
+
+        echo json_encode(array("sucess" => 'exist'));
+
+    } 
+    
+    else {
+        $query = $db->query("INSERT INTO reviews (transaction_id,product_name,name,email,ratings,comment,filename,filetype) VALUES ('$transcId','$transcName','$name','$email','$ratings','$reviews','$fileName','$fileType')");
+        if($query) {
+                 echo json_encode(array("success" => 'valid'));
+        }
+        else{
+              echo json_encode(array("success" => 'invalid'));
+        }
+    }
+
+
+   
+}
+
+function validate($data) { // Input fields validator to avoid XSS and SQL Injection
+   $data = trim($data); // remove extra white space(s)
+   $data = stripslashes($data); // remove forward and back slashes
+   $data = htmlspecialchars($data); // remove special characters
+   return $data;
+}

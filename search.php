@@ -40,10 +40,10 @@
                                 <h3 class="font-weight-500"><a href="product-details.php"><?=$product['title']?></a></h3>
                                 <div class="price ">
                                     <?php if($product['discount'] != 0) { ?>
-                                        <span class="old">₱<?=number_format($product['price'],2)?></span>
+                                        <span class="old">AED<?=number_format($product['price'],2)?></span>
                                     <?php } else { ?>
                                     <?php } ?>
-                                    <span>₱<?=number_format($product['price'] - ($product['price'] * ($product['discount'] / 100)) ,2)?></span>
+                                    <span>AED<?=number_format($product['price'] - ($product['price'] * ($product['discount'] / 100)) ,2)?></span>
                                 </div>
                                 <div class="btn-block grid-btn">
                                     <a href="?add-to-cart=true&id=<?=$product['id']?>" class="btn btn-outlined btn-rounded btn-mid" tabindex="0">Add to
@@ -51,11 +51,74 @@
                                 </div>
                                 <div class="card-list-content ">
                                     <div class="rating-widget ">
+                                           <?php 
+                                                   
+                                                      for ($i=1; $i <= count_reviewsbyProduct($product['title']) && count_reviewsbyProduct($product['title']) <= 5; $i++) { 
+
+
+                                                    
+                                                            ?>
+                                                     <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
+
+                                                    
+                                                     <?php
+                                                            
+                                                    
+
+                                                      }
+                                                     
+                                      ?>
+                                           <?php 
+                                                    $startWhite = 5 - count_reviewsbyProduct($product['title']);
+                                                      for ($i=1; $i <=$startWhite && $startWhite <= 5; $i++) { 
+
+
+                                                       
+                                                            ?>
+                                                  <a href="#" class="single-rating"><i class="far fa-star"></i></a>
+
+                                                    
+                                                     <?php
+                                                            
+                                                          
+
+                                                    
+                                                       
+
+                                                      }
+                                                     
+                                            ?>
+                                         <?php 
+                                                    $star = count_reviewsbyProduct($product['title']);
+
+                                                      if($star > 5){
+
+                                                      for ($i=1; $i <= 5; $i++) { 
+
+
+                                                       
+                                                            ?>
+                                                      <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
+
+                                                     <?php
+                                                            
+                                                          
+
+                                                    
+                                                       
+
+                                                      }
+                                                      }
+
+
+                                                     
+                                            ?>
+                                    <span class="rating-text"><a href="#comment-form">(<?php echo count_reviewsbyProduct($product['title']) ?> customer review)</a></span>
+                                    
+                                        <!-- <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
                                         <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
                                         <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
-                                        <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
-                                        <a href="#" class="single-rating"><i class="fas fa-star-half-alt"></i></a>
-                                        <a href="#" class="single-rating"><i class="far fa-star"></i></a>
+                                        <a href="#" class="single-rating"><i class="fas fa-star"></i></a> -->
                                     </div>
                                     <article>
                                         <h3 class="d-none sr-only">Article</h3>
@@ -64,10 +127,10 @@
                                     <div class="btn-block d-flex">
                                         <a href="?add-to-cart=true&id=<?=$product['id']?>&wildcard=<?=urlencode($_GET['wildcard'])?>&category=<?=$_GET['category']?>&success=true&message=<?=urlencode('Item has added to your cart')?>" class="btn btn-outlined btn-rounded btn-mid"
                                             tabindex="0">Add to Cart</a>
-                                        <div class="btn-options">
+                                        <!-- <div class="btn-options">
                                             <a href="wishlist.php?id=<?=$product['id']?>"><i class="ion-ios-heart-outline"></i>Add to
                                                 Wishlist</a>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
