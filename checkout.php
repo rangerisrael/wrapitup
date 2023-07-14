@@ -6,18 +6,34 @@
 <?php header('location: login.php')?>
 <?php } ?>
 <?php
-if(account_billing_address($_SESSION['id'])->num_rows == 0 || account_shipping_address($_SESSION['id'])->num_rows == 0 && $user['firstname'] == '' || $user['surname'] == '' || $user['email'] == '' || $user['contact'] == '') {
-    header('location: my-account.php');
+if(account_billing_address($_SESSION['id'])->num_rows == 0 || account_shipping_address($_SESSION['id'])->num_rows == 0 ) {
+
+        header('location: my-account.php?forbidden=true&id=getAddressEdit');
+
+
+}
+else{
+    if ($user['firstname'] == '' || $user['surname'] == '' || $user['email'] == '' || $user['contact'] == '') {
+        header('location: my-account.php?forbidden=true&id=getProfile');
+    }
 }
 ?>
 <?php 
-if(isset($_POST['btn_place_order'])) {
+if(isset($_POST['btn_place_order']) && !isset($_GET['staff'])) {
     $shipping_trigger  = isset($_POST['shipping_trigger']) ? $db->real_escape_string($_POST['shipping_trigger']) : 'No';
     $method_of_payment = $db->real_escape_string($_POST['method_of_payment']);
     $notes             = $db->real_escape_string($_POST['notes']);
-    transaction($shipping_trigger,$method_of_payment,$notes);
+    $ship_fee        = $db->real_escape_string($_POST['ship_fee']);
+    
+    transaction($shipping_trigger,$method_of_payment,$notes,$ship_fee);
 }
+
+
+
 ?>
+
+
+
 <style>
     /* for radio buttonpayment gateway  */
 
@@ -65,7 +81,7 @@ if(isset($_POST['btn_place_order'])) {
         </nav>
 
 
-        <form method="POST">
+        <form id='billingForm' method="POST">
 
             <main id="content" class="page-section sp-inner-page checkout-area-padding space-db--20">
                 <div class="container">
@@ -85,7 +101,7 @@ if(isset($_POST['btn_place_order'])) {
                                                 <div class="col-md-6 col-12 mb--20">
                                                     <label>First Name*</label>
                                                     <input type="text" readonly value="<?=$user['firstname']?>"
-                                                        placeholder="First Name">
+                                                        placeholder="First Name"  >
                                                 </div>
 
                                                 <div class="col-md-6 col-12 mb--20">
@@ -139,7 +155,7 @@ if(isset($_POST['btn_place_order'])) {
                                                         value="<?=$billing['address']?>" readonly>
                                                 </div>
 
-                                                <div class="col-12 mb--20 ">
+                                                <div id='shipAddress' class="col-12 mb--20 ">
                                                     <div class="block-border check-bx-wrapper">
                                                         <div class="check-box">
                                                             <input type="checkbox" id="shiping_address"
@@ -222,6 +238,41 @@ if(isset($_POST['btn_place_order'])) {
                                             </div>
 
                                         </div>
+
+
+
+                                    <div class='col-md-12 col-12 mb--20'>
+                                        <h3 class='text-dark'>Delivery Options</h3>
+                                        <div>
+                                            <span><input checked type="radio" value='bringitthere'  name="receive_item" onclick="isRadioCheck(this,'#getReceiveItem')" > </span>
+                                            <span class='text-dark'>I will bring it there</span>
+                                        
+                                        </div>
+                                        <div>
+                                        <span><input type="radio" value='pickitupadress'   name="receive_item" onclick="isRadioCheck(this,'#getReceiveItem')"> </span>
+                                        <span class='text-dark'>Pick it up from my address</span>
+
+                                        <input type="hidden" name="getReceiveItem" id='getReceiveItem' value='0'>
+                                       
+                                        </div>
+
+                                        <div >
+                                        <span><input checked type="radio" value='pickitup'  name="wrap_item" onclick="isRadioCheck(this,'#getWrapItem')"> </span>
+                                            <span class='text-dark'>I will pick it up</span>
+                                        </div>
+                                        <div >
+                                        <span><input type="radio" value='deliveraddress'  name="wrap_item" onclick="isRadioCheck(this,'#getWrapItem')"> </span>
+                                        <span class='text-dark'>Deliver it to my address</span>
+                                       
+                                        <input type="hidden" name="getWrapItem" id='getWrapItem' value='0'>
+
+                                        </div>
+                                    </div>
+                                   
+
+
+
+
                                         <div class="order-note-block mt--30">
                                             <label for="order-note">Order notes</label>
                                             <textarea id="order-note" cols="30" rows="10" name="notes"
@@ -251,11 +302,14 @@ if(isset($_POST['btn_place_order'])) {
                                                         </li>
                                                         <?php } ?>
                                                     </ul>
+                                                 
+                                                    <p>Sub Total <span id='subTotal'>AED<?=number_format($total,2)?></span></p>
+                                                    <p>Shipping Fee <span id='shipping_fee'>AED<?=number_format(0,2)?></span></p>
+                                                 <input type="hidden" name="ship_fee" id="ship_fee">                  
+                                                    <h4>Grand Total <span id='grad_total'>AED<?=number_format($total + 0,2)?></span></h4>
+                                                
+                                                 <input type="hidden" name="grad_fee" id="grad_fee">                  
 
-                                                    <p>Sub Total <span>AED<?=number_format($total,2)?></span></p>
-                                                    <p>Shipping Fee <span>AED<?=number_format(0,2)?></span></p>
-
-                                                    <h4>Grand Total <span>AED<?=number_format($total + 0,2)?></span></h4>
                                                     <div class="mb--25 mt--25">
                                                         <i class="fas fa-cash2 fa-fw"></i>
                                                         <div class="radio-toolbar">
@@ -295,11 +349,10 @@ if(isset($_POST['btn_place_order'])) {
                                                     
                                                     <div class="term-block">
                                                         <input type="checkbox" id="accept_terms2">
-                                                        <label for="accept_terms2">I’ve read and accept the terms &
-                                                            conditions</label>
+                                                        <label for="accept_terms2">Verify order details</label>
                                                     </div>
                                                     <button type="submit" name="btn_place_order" id="place"
-                                                        class="btn btn-success text-white w-100">Place order</button>
+                                                        class="btn btn-success text-white w-100">Place Oder</button>
         </form>
         <form method="GET">
             <input type="hidden" name="method-of-payment" value="Stripe">
@@ -328,6 +381,104 @@ if(isset($_POST['btn_place_order'])) {
     <?php include 'layouts/footer.php';?>
     </div>
     <?php include 'layouts/scripts.php';?>
+
+    
+
+    <script>
+
+
+
+ function isRadioCheck(radio,selected) {
+  if (radio.checked) {
+
+    console.log(selected,'getselected')
+
+    console.log(radio.value,'radio value')
+  
+    
+      $(selected).val(radio.value);
+      // Here you can perform further actions with the selected value
+    }
+
+    let getSelectedReceive = $('#getReceiveItem').val();
+    let getSelectedWrapItem = $('#getWrapItem').val();
+
+   if(getSelectedReceive === 'bringitthere' && getSelectedWrapItem ==='deliveraddress' || getSelectedReceive === 'pickitupadress' && getSelectedWrapItem ==='pickitup'){
+                $('#shipping_fee').text('AED 10.00');
+                $('#ship_fee').val('10.00');
+               const defaultTotal = $('#grad_total').text().replace('AED','');
+              const newTotal = parseFloat(defaultTotal) + 10;
+                $('#grad_total').text(`AED ${newTotal}`);
+                $('#grad_fee').val(`AED ${newTotal}`);
+                
+    }
+   if(getSelectedReceive === 'pickitupadress' && getSelectedWrapItem ==='deliveraddress'){
+                $('#shipping_fee').text('AED 20.00');
+                $('#ship_fee').val('20.00');
+                const defaultTotal = $('#grad_total').text().replace('AED','');
+
+                 
+                const newTotal = parseFloat(defaultTotal) + 20;
+                $('#grad_total').text(`AED ${newTotal}`);
+                $('#grad_fee').val(`AED ${newTotal}`);
+    }
+
+ if(getSelectedReceive === 'bringitthere' && getSelectedWrapItem ==='pickitup'){
+
+                $('#shipping_fee').text('AED 0.00');
+                $('#ship_fee').val('0.00');
+
+                const gradDefault = $('#subTotal').text();
+               $('#grad_total').text(gradDefault);
+                $('#grad_fee').val(`AED ${gradDefault}`);
+  }
+
+
+
+  }
+ 
+
+    const searchParams =  new URLSearchParams(window.location.search);
+
+
+
+        if(searchParams.get('staff') === 'true'){
+            
+            $('#shipAddress').hide();
+              var form = document.getElementById("billingForm");
+            var fields = form.querySelectorAll('input:not([type="radio"])');
+
+            // Iterate over each form field and reset to default value
+            fields.forEach(function(field) {
+            var defaultValue = field.getAttribute("data-default");
+             field.readOnly = false;
+            field.value = defaultValue;
+            });
+
+
+
+            $('#billingForm').submit(function(e){
+                e.preventDefault();
+               
+                const formData = new FormData(this);
+
+                let data ={};
+
+                for (const pair of formData) {
+                    data[pair[0]] = pair[1];
+                }
+
+
+                console.log(data,'get data')
+               
+            })
+
+
+         
+        
+        }
+        
+    </script>
     <script>
         $('#pay-stripe').hide();
 
@@ -362,6 +513,9 @@ if(isset($_POST['btn_place_order'])) {
             }
             $('#stripe_shipping_trigger').val(data)
         })
+
+
+
     </script>
 </body>
 

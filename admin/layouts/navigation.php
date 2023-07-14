@@ -48,8 +48,23 @@
 							</a>
 						</li>
 
+						<?php
+						if(isset($_SESSION['administrator'])) {
+							?>
+							<li class="nav-item-header">
+								<div class="text-uppercase font-size-xs line-height-xs">Staff Users</div> <i class="icon-menu"
+									title="Content Management"></i>
+							</li>
+							<li class="nav-item "><a href="view-staff-user.php" class="nav-link"><i class="icon-home4"></i><span>Create</span></a>
+							</li>
+					<?php
+
+						}
+
+						?>
+
 						<!-- Layout -->
-						<li class="nav-item-header"><div class="text-uppercase font-size-xs line-height-xs">Products</div> <i class="icon-menu" title="Content Management"></i></li>
+							<li class="nav-item-header"><div class="text-uppercase font-size-xs line-height-xs">Products</div> <i class="icon-menu" title="Content Management"></i></li>
 						<li class="nav-item "><a href="add-new-products.php" class="nav-link"><i class="icon-home4"></i><span>Create</span></a></li>
 						<li class="nav-item"><a href="transaction.php" class="nav-link"><i class="icon-stack2"></i> <span>Orders</span></a></li>
 						<li class="nav-item"><a href="reviews.php" class="nav-link"><i class="icon-stack2"></i> <span>Product Reviews</span></a></li>

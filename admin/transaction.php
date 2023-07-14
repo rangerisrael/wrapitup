@@ -76,6 +76,8 @@
                                                             echo 'Processing';
                                                         } elseif($orders['status'] == 2) {
                                                             echo 'Completed';
+                                                        } elseif ($orders['status'] == 3) {
+                                                            echo 'Out For Delivery';
                                                         } else {
                                                             echo 'Cancelled';
                                                         }
@@ -83,7 +85,7 @@
                                                 </td>
                                                 <td>AED&nbsp;<?=number_format($orders['total'],2)?></td>
                                                 <td><?=$orders['items']?></td>
-                                                <td style="width:1px"> <a href="orders.php?reference=<?=$orders['reference']?>" ><i class="icon-eye"></i></a></td>
+                                                <td style="width:1px"> <a href="orders.php?reference=<?=$orders['reference']?>&product=<?= $orders['product'] ?>" ><i class="icon-eye"></i></a></td>
                                             </tr>
                                         <?php } ?>
                                     </tbody>

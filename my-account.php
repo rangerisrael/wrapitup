@@ -83,17 +83,26 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 			<div class="row">
 				<div class="col-12">
 					<div class="row">
+								<?php
+
+								$getOrderDetails = isset($_SESSION['customer']) && $_SESSION['customer'] == 2 ? assisted_staff_orders() : my_orders();
+								$getStaff = isset($_SESSION['customer']) && $_SESSION['customer'] == 2 ? 1 : 0;
+
+								?>
 						<!-- My Account Tab Menu Start -->
 						<div class="col-lg-3 col-12">
 							<div class="myaccount-tab-menu nav" role="tablist">
 								<a href="#dashboad" class="active" data-bs-toggle="tab"><i class="fas fa-tachometer-alt"></i>
-									Dashboard</a>
+									Dashboard <span class='ml-2 font-weight-bold'><?php  echo $_SESSION['customer'] == 2 ? strtolower('(Staff)') : strtolower('(Customer)') ?></span></a>
 
 								<a href="#orders" data-bs-toggle="tab"><i class="fa fa-cart-arrow-down"></i> Orders</a>
 
-								<a href="#address-edit" data-bs-toggle="tab"><i class="fa fa-map-marker"></i> address</a>
+								<?php if($getStaff == 0) 
+								{?>
+							<a id='getAddressEdit' href="#address-edit" data-bs-toggle="tab"><i class="fa fa-map-marker"></i> address</a>
+							<?php }?>
 
-								<a href="#account-info" data-bs-toggle="tab"><i class="fa fa-user"></i> Account Details</a>
+								<a id='getProfile' href="#account-info" data-bs-toggle="tab"><i class="fa fa-user"></i> Account Details</a>
 
 								<a href="#change-password" data-bs-toggle="tab"><i class="fa fa-lock"></i> Change Password</a>
 
@@ -108,7 +117,7 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 								<!-- Single Tab Content Start -->
 								<div class="tab-pane  show active" id="dashboad" role="tabpanel">
 									<div class="myaccount-content">
-										<h3>Dashboard</h3>
+										<h3>Dashboard </h3>
 
 										<div class="welcome mb-20">
 											<p>Hello, <strong><?=!empty($user['firstname']) ? $user['firstname'].' '.$user['surname'] : $user['username']?></strong> </p>
@@ -124,7 +133,9 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 								<!-- Single Tab Content Start -->
 								<div class="tab-pane " id="orders" role="tabpanel">
 									<div class="myaccount-content">
-										<h3>Orders</h3>
+
+									
+										<h3><?php echo $getStaff == 1 ? 'Assisted Orders' : 'Orders' ?></h3>
 
 										<div class="myaccount-table table-responsive text-center">
 											<table class="table " id="myTable">
@@ -132,6 +143,16 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 												<tr>
 													<th>No</th>
 													<th>Reference</th>
+												
+														<?php
+
+														if ($getStaff == 1) { ?>
+																<th>Email</th>
+																<?php
+
+														}
+
+														?>
 													<th>Mode of Payment</th>
 													<th>Date</th>
 													<th style="width:1px">Status</th>
@@ -143,28 +164,57 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 
 												<tbody>
 													<?php $i=1;?>
-													<?php foreach(my_orders() as $orders) { ?>
+											
+													<?php foreach ($getOrderDetails as $orders) { ?>
 														<tr>
-															<td><?=$i++?></td>
-															<td><?=$orders['reference']?></td>
-															<td><?=$orders['method_of_payment']?></td>
-															<td><?=$orders['created_at']?></td>
 															<td>
-																<?php 
-																	if($orders['status'] == 0) {
-																		echo 'Pending';
-																	} elseif($orders['status'] == 1) {
-																		echo 'Processing';
-																	} elseif($orders['status'] == 2) {
-																		echo 'Completed';
-																	} else {
-																		echo 'Cancelled';
-																	}
+																<?= $i++ ?>
+															</td>
+															<td>
+																<?= $orders['reference'] ?>
+															</td>
+														
+
+															<?php 
+																
+																if($getStaff == 1){?>
+														<td>
+															<?= $orders['email'] ?>
+														</td>
+											
+
+														<?php
+																
+																}
+
+															?>
+															<td>
+														
+																<?= $orders['method_of_payment'] ?>
+															</td>
+															<td>
+																<?= $orders['created_at'] ?>
+															</td>
+															<td>
+																<?php
+																if ($orders['status'] == 0) {
+																	echo 'Pending';
+																} elseif ($orders['status'] == 1) {
+																	echo 'Processing';
+																} elseif ($orders['status'] == 2) {
+																	echo 'Completed';
+																} else {
+																	echo 'Cancelled';
+																}
 																?>
 															</td>
-															<td>AED&nbsp;<?=number_format($orders['total'],2)?></td>
-															<td><?=$orders['items']?></td>
-															<td><a href="orders.php?reference=<?=$orders['reference']?>" class="">View</a></td>
+															<td>AED&nbsp;
+																<?= number_format($orders['total'], 2) ?>
+															</td>
+															<td>
+																<?= $orders['items'] ?>
+															</td>
+															<td><a href="orders.php?reference=<?= $orders['reference'] ?>" class="">View</a></td>
 														</tr>
 													<?php } ?>
 												</tbody>
@@ -401,6 +451,45 @@ $shipAddress = empty($shipping['address']) ? '' : $shipping['address'];
 		})
 		
 		$('#myTable').DataTable();
+
+	</script>
+
+		<script>
+
+
+	
+	
+			function getAddress() {
+					document.getElementById('getAddressEdit').click();
+
+			}
+
+
+		(function () {
+
+
+				const searParams = new URLSearchParams(window.location.search);
+
+				if (searParams.get('forbidden') === 'true') {
+					Swal.fire({
+							icon: 'error',
+							title: 'Oops...',
+							text: 'Please complete your profile address and account details first!',
+					});
+					setTimeout(() => {
+						let getStateId = searParams.get('id');
+
+						
+
+						document.getElementById(getStateId).click();
+					}, 1000);
+			}
+
+			
+
+
+	})();
+
 
 	</script>
 </body>

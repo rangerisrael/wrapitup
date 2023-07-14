@@ -1,4 +1,58 @@
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Your order status has been updated</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Reference: <span style='font-weight:600;'id="reference"></span></p>
+                <table >
+                    <tr>
+                        <th style="font-weight:600;">Product</th>
+                        <th style="font-weight:600;">Price</th>
+                    </tr>
+                    <tbody id="product">
+                    </tbody>
+                </table>
+                <p>Your transaction  is <span id="status"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="productModalShow" tabindex="-1" role="dialog" aria-labelledby="productModalShowLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Your order status has been updated</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Reference: <span style='font-weight:600;'id="ref"></span></p>
+                <table >
+                    <tr>
+                        <th style="font-weight:600;"><span class='mr-5'>Product</span></th>
+                        <th style="font-weight:600;">Price</th>
+                    </tr>
+                    <tbody>
+                        <td><span id='prod' class='mr-5'>Wood</span></td>
+                        <td><span id='pric'>AED 80</span></td>
+                    </tbody>
+                </table>
+                <p>Your transaction  is <span id="stats"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <header class="header petmark-header-1">
+    
     <div class="header-wrapper">
         <!-- Site Wrapper Starts -->
         <div class="header-middle">
@@ -42,7 +96,7 @@
         </div>
     </div>
     <div class="header-nav-wrapper">
-        <div class="container">
+        <div class="container-fluid">
             <div class="header-bottom-inner">
                 <div class="row g-0">
                     <!-- Category Nav -->
@@ -120,26 +174,169 @@
                         </nav>
                     </div>
                     <!-- Cart block-->
-                    <div class="col-lg-2 col-6 offset-6 offset-md-0 col-md-3 order-3">
+                    <div class="col-lg-2 col-6 offset-6 offset-md-0 col-md-3 order-3 d-flex justify-content-stretch">
+                          <div  class="cart-widget-wrapper slide-down-wrapper">
+                            <?php 
+                            if(isset($_SESSION['id'])){
+                                ?>
+                                <div class="cart-widget slide-down--btn">
+                                <div class="cart-icon">
+                                    <i class="ion-android-notifications"></i>
+                                    <span id='badge' class="cart-count-badge">
+                                <?php
+
+                                                if (isset($_SESSION['id'])) {
+
+                                                    echo getCountNotification($_SESSION['id']);
+                                                } else {
+                                                    echo '0';
+                                                }
+
+                                                ?>
+                                            </span>
+                                
+                                
+                                        </div>
+                                
+                                
+                                    </div>
+                        <?php
+                            }
+                            
+                            ?>
+                            <div  class="slide-down--item ">
+
+    <style>
+        @media screen and (max-width: 480px) {
+             .custom-styled{
+                width:175% !important;
+                max-width:320px;
+            
+             }
+        }
+    </style>
+
+                             <div class="cart-widget-box custom-styled" style='max-height:250px; overflow-x:hidden;overflow-y:auto;padding:1rem;' >
+
+                                 
+                            <ul class="cart-items" >
+                                 
+                                <?php
+
+                             if(isset($_SESSION['id']) && getCountNotification($_SESSION['id']) > 0){
+                                getCountNotification($_SESSION['id']);
+                             }
+                             else{
+                                echo '<p class="text-center">No recent notification<p>';
+                             }
+
+                                ?>
+                               <?php 
+                                if(isset($_SESSION['id']) && getCountNotification($_SESSION['id']) > 0){
+                                    ?>
+                                     <li style='border-bottom:1px solid #eaeaea;padding:0.4rem;' class='text-right'>
+                                        <button onclick="deleteNotifAll()">Clear All<i class='ml-2 ion-android-delete text-danger'></i></button>
+                                    </li>
+                                    
+                                        <?php foreach (getNotification($_SESSION['id']) as $notification) 
+                                        {
+
+
+
+                                                 $notificationDetails = [
+                                                        'product' => $notification['product_item'],
+                                                        'price' => $notification['product_price'],
+                                                        'ref' => $notification['reference_number'],
+                                                        'status' => $notification['status']
+                                                 ];
+
+                                            $getStatus = number_format($notification['status']);
+                                               $statusColor = 'text-default';
+
+                                               if($getStatus == 0){
+                                                    $statusColor = 'text-warning';
+                                               }
+                                                else if($getStatus == 4){
+                                                    $statusColor = 'text-danger';
+                                                }
+                                                else{
+                                                    $statusColor = 'text-success';
+                                                }
+
+                                        
+                                               
+                                                ?>
+                                        
+                                        <li class='text-right'>
+                                                    <button onclick="deleteNotif(<?php echo $notification['id']; ?>)"><i style='font-size:1.5rem;'>&times;</i></button>
+                                        </li>
+                                            <li class="single-cart-item">
+                                                <span class="product-name">Your order has been updated</span> <span>
+                                                    <?php echo timeAgo($notification['date_created']) ?>
+                                                </span>
+                                            </li>
+                                            <li class="single-cart-item">
+                                                <span onclick="getListItem(<?php echo htmlspecialchars(json_encode($notificationDetails), ENT_QUOTES, 'UTF-8'); ?>)" class="product-name"><b>Ref #</b><a class='ml-2' href="javascript:void(0)">
+                                                        <?= $notification['reference_number'] ?>
+                                                    </a></span>
+                                               <span class="product-name mr-4"><b>Product</b><i class="ml-2" href="javascript:void(0)">
+                                                       <?= $notification['product_item'] ?>
+                                        </i></span>
+                                                    </li>
+                                                    <li class="single-cart-item">
+                                    
+                                                    </li>
+                                                    <li style='border-bottom:1px solid #eaeaea;' class="single-cart-item">
+                                                    <span>  Status:</span>
+                                                        <span class="<?php echo $statusColor ?>">
+                                                          
+                                                    <?php if ($notification['status'] == 0) { ?>
+                                                        Pending
+                                                    <?php } elseif ($notification['status'] == 1) { ?>
+                                                        Processing
+                                                    <?php } elseif ($notification['status'] == 2) { ?>
+                                                        Completed
+                                                    <?php } elseif ($notification['status'] == 3) { ?>
+                                                        Out For Delivery
+                                                    <?php } else { ?>
+                                    
+                                                        Cancelled
+                                                    <?php } ?>
+                                    
+                                                </span>
+                                            </li>
+                                    
+                                    
+                                        <?php } ?>
+                                        </ul>
+                            <?php
+                                }
+                               
+                               ?>
+
+                                </div>
+                            </div>
+                        </div>
                         <div class="cart-widget-wrapper slide-down-wrapper">
                             <div class="cart-widget slide-down--btn">
-                                <div class="cart-icon">
+                                      <div class="cart-icon">
                                     <i class="ion-bag"></i>
                                     <span class="cart-count-badge">
-                                        <?php if(!isset($_SESSION['cart']) || empty($_SESSION['cart'])) { ?>
-                                        0
-                                        <?php } else { ?>
-                                        <?php $total = 0?>
-                                        <?php $totalQuantity = 0?>
-                                        <?php foreach($_SESSION['cart'] as $cart) { ?>
-                                        <?php $total += $cart['price'] * $cart['quantity'];?>
-                                        <?php $totalQuantity += $cart['quantity']?>
-                                        <?php } ?>
-                                        <?=$totalQuantity?>
-                                        <?php } ?>
-                                        
-                                    </span>
-                                </div>
+                                        <?php if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) { ?>
+                                                0
+                                            <?php } else { ?>
+                                                <?php $total = 0 ?>
+                                                <?php $totalQuantity = 0 ?>
+                                                <?php foreach ($_SESSION['cart'] as $cart) { ?>
+                                                    <?php $total += $cart['price'] * $cart['quantity']; ?>
+                                                    <?php $totalQuantity += $cart['quantity'] ?>
+                                                <?php } ?>
+                                                <?= $totalQuantity ?>
+                                            <?php } ?>
+                                    
+                                        </span>
+                                    
+                                    </div>
                                 <div class="cart-text">
                                     <span class="d-block">Your cart</span>
                                     <strong><span class="amount"><span class="currencySymbol">AED</span><?=number_format(isset($total) ? $total : 0,2)?></span></strong>
@@ -181,7 +378,30 @@
                                         </li>
                                         <li class="single-cart">
                                             <a href="cart.php" class="btn btn-outlined">View Cart</a>
+
+                                        <?php
+                                            
+                                            if(isset($_SESSION['customer'])){
+                                                if($_SESSION['customer'] == 2){
+                                        ?>
+                                            <a href="checkoutStaff.php" class="btn btn-outlined">Check Out</a>
+
+                                        <?php
+                                                }
+                                                else{
+
+                                                    ?>
+                                                    
                                             <a href="checkout.php" class="btn btn-outlined">Check Out</a>
+
+                                              <?php      
+
+                                                }
+                                            }
+
+
+                                        ?>
+
                                         </li>
                                         <?php } ?>
 
@@ -209,3 +429,119 @@
         </div>
     </div>
 </header>
+
+<script>
+
+
+function getListItem(notification){
+
+
+   if(notification !== null){
+
+    let cvProd = notification['product'].split(',').join('<br>');
+    
+    let cvPrice = notification['price'].split(',').join('<br>');
+
+    let getStatus = Number(notification['status']);
+    let getStatusColor = getStatus === 0 ? 'text-warning': getStatus === 4 ? 'text-danger' : 'text-success';
+        
+
+  
+
+    document.getElementById('ref').innerText = notification['ref'];
+    document.getElementById('prod').innerHTML = cvProd;   
+    document.getElementById('pric').innerHTML =  cvPrice;    
+    document.getElementById('stats').innerText = getStatus === 0 ? 'Pending' : getStatus === 1 ? 'Processing' : getStatus === 2 ? 'Completed' : getStatus === 3 ? 'Out For Delivery' : 'Cancelled';
+    document.getElementById('stats').classList.add(getStatusColor);
+
+     $('#productModalShow').modal('show');
+   }
+
+       
+    
+}
+
+function deleteNotifAll(){
+    Swal.fire({
+  title: 'Are you sure?',
+  text: "You won't be able to revert this!",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Yes, delete it!'
+}).then((result) => {
+  if (result.isConfirmed) {
+
+    $.ajax({
+      url: './mail/deleteAll.php',
+      type: 'POST',
+      processData: false,
+      contentType: false,
+      async: false,
+      cache: false,
+      dataType: 'json',
+      success: function (response) {
+
+       if(response.status === 'success'){
+          Swal.fire(
+            'Deleted!',
+            'Notification deleted.',
+            'success'
+            )
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+       }
+    
+          
+      },
+      error: function (response) {
+        console.log('Failed');
+      }
+  });
+
+  
+  }
+})
+}
+
+
+function deleteNotif(id){
+
+        
+    const formData = new FormData();
+    formData.append('id', id);
+
+    $.ajax({
+      url: './mail/delete-notification.php',
+      type: 'POST',
+      processData: false,
+      contentType: false,
+      data  : formData,
+      async: false,
+      cache: false,
+      dataType: 'json',
+      success: function (response) {
+
+       if(response.status === 'success'){
+          Swal.fire(
+            'Deleted!',
+            'Notification deleted..',
+            'success'
+            )
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+       }
+    
+          
+      },
+      error: function (response) {
+        console.log('Failed');
+      }
+  });
+
+  
+}
+</script>

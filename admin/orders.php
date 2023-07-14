@@ -21,7 +21,8 @@
 <?php $shipping      = $shippingQuery->fetch_assoc();?>
 
 <?php if(isset($_GET['reference']) && isset($_GET['status'])) { ?>
-    <?php update_transaction_status($_GET['reference'],$_GET['status']); ?>
+    <?php update_transaction_status($_GET['reference'],$_GET['status'], $user['id'], $_GET['product']); ?>
+    
 <?php } ?>
 <body>
 
@@ -68,6 +69,25 @@
 
                 <div class="card">
                     <div class="card-body">
+
+                            <?php
+                            $_SESSION['product_order'] = []; // Initialize the session variable as an empty string
+                            $_SESSION['product_item'] = '';
+                            $_SESSION['product_price'] = '';
+
+                            foreach (get_order_details($_GET['reference']) as $orders) {
+
+                                $product = [
+                                    'product' => $orders['product'],
+                                    'price' => $orders['price']
+                                ];
+                                $_SESSION['product_order'][] = $product;
+                                $_SESSION['product_item'] .= $orders['product'].',';
+                                $_SESSION['product_price'] .= $orders['price'].',';
+
+                            }
+                            ?>
+
                     
                         <div class="row">
                             <div class="col-md-4 col-12">
@@ -116,7 +136,10 @@
                                     Processing
                                     <?php } elseif($status == 2) { ?>
                                     Completed
+                                     <?php } elseif($status == 3) { ?>
+                                    Out For Delivery
                                     <?php } else { ?>
+                                        
                                     Cancelled
                                     <?php } ?>
 
@@ -135,10 +158,11 @@
                                         Update Status
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="orders.php?reference=<?=$_GET['reference']?>&status=0">Pending</a>
-                                        <a class="dropdown-item" href="orders.php?reference=<?=$_GET['reference']?>&status=1">Processing</a>
-                                        <a class="dropdown-item" href="orders.php?reference=<?=$_GET['reference']?>&status=2">Completed</a>
-                                        <a class="dropdown-item" href="orders.php?reference=<?=$_GET['reference']?>&status=3">Cancelled</a>
+                                        <a class="dropdown-item" href="orders.php?reference=<?=$_GET['reference']?>&status=0&product=<?= $_GET['product']?>">Pending</a>
+                                        <a class="dropdown-item" href="orders.php?reference=<?=$_GET['reference']?>&status=1&product=<?= $_GET['product']?>">Processing</a>
+                                        <a class="dropdown-item" href="orders.php?reference=<?=$_GET['reference']?>&status=2&product=<?= $_GET['product']?>">Completed</a>
+                                        <a class="dropdown-item" href="orders.php?reference=<?= $_GET['reference'] ?>&status=3&product=<?= $_GET['product']?>">Out For Delivery</a>
+                                          <a class="dropdown-item" href="orders.php?reference=<?=$_GET['reference']?>&status=4&product=<?= $_GET['product']?>">Cancelled</a>
                                     </div>
                                     </div>
                                     </div>

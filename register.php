@@ -1,13 +1,5 @@
 <?php include 'layouts/header.php';?>
-<?php 
-    if(isset($_POST['btn_create_new_account'])) {
-        global $db;
-        $email    = $db->real_escape_string($_POST['email']);
-        $username = $db->real_escape_string($_POST['username']);
-        $password = $db->real_escape_string($_POST['password']);
-        create_new_account($email,$username,$password);
-    }
-?>
+
 
 <body>
     <div class="site-wrapper">
@@ -27,10 +19,9 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-sm-12 col-md-12 col-xs-12 col-lg-6 mb-30">
-                        <!-- Login Form s-->
-                        <form method="POST">
 
-                            <div class="login-form">
+                        <!-- Login Form s-->
+                        <form id='registerFrm' class='login-form'>
                                 <div class="row">
                                     <div class="col-md-12 col-12 mb--20">
                                         <label>Email Address </label>
@@ -52,13 +43,17 @@
                                         </div>
                                     </div>
 
+                                    
                                 </div>
-                            </div>
-
                         </form>
                     </div>
                 </div>
             </div>
+
+
+            
+              
+         </div>
         </main>
 
         <!-- Slider bLock 4 -->
@@ -67,5 +62,154 @@
     </div>
     <?php include 'layouts/scripts.php';?>
 </body>
+
+
+<script>
+
+     
+
+function generateCode(lengthNum){
+   const numbers = '0123456789';
+
+    let generate='';
+    const charLength = numbers.length;
+    
+    for(let i=0; i< lengthNum; i++){
+
+        generate += numbers.charAt(Math.floor(Math.random() * charLength));
+
+        generate = Number(generate);
+      
+    }
+
+    return generate;
+}
+
+
+        $('#registerFrm').submit((e)=>{
+            e.preventDefault();
+            
+             var form = document.getElementById("registerFrm");
+            var formData = new FormData(form);
+            formData.append('code', generateCode(4));
+             var data = {};
+
+            for (var pair of formData.entries()) {
+              data[pair[0]] = pair[1];
+            }
+
+    
+
+
+
+           
+           	const emailData = {
+				"email":data.email,
+                htmlSrc:`
+            <div style="max-width:480px; margin: 0 auto;">
+                <div style="text-align: center;">
+                    <div style="float: left;">
+                        <img style="border-radius: 50%;" src="https://wrapitup.store/assets/image/wrapitup-logo.jpg" width="80" height="80" />
+                        <p style='font-weight:600;'>Wrapitup</p>
+                    </div>
+                    <div>
+                        <h4>Thank you for registering with us</h4>
+                        <h3>Username: ${data.username}</h3>
+                        <h3>Email: ${data.email}</h3>
+                        <h3 style="text-align:center;">Your code</h3>
+                        <h2 style="text-align:center;margin-left:100px;">${data.code}</h2>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+                </div>`
+			}
+
+             $.ajax({
+                url: './mail/register-user.php',
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                async: false,
+                cache: false,
+                dataType: 'json',
+                success: function (response) {
+
+
+                
+                   
+                    if(response.exist === true){
+                        Swal.fire({
+                        icon: 'error',
+                        title: 'Accout already exist',
+                        text: 'Something went wrong!',
+                    
+                        })
+                    }
+                    else{
+                        verify();
+                    }
+
+                },
+                error: function (response) {
+                  console.log("Failed");
+                }
+            
+            });
+
+
+
+
+            function verify(){
+                
+
+              $.ajax({
+                url: './mail/mail-setup.php',
+                type: "POST",
+                data: JSON.stringify(emailData),
+                processData: false,
+                contentType: false,
+                async: false,
+                cache: false,
+                success: function (response) {
+                  Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Email sent successfully',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                setTimeout(() => {
+
+                    Cache(['details']);
+                    location.href = 'verification.php';
+
+                }, 1000);
+
+            
+                },
+                error: function (response) {
+                  console.log("Failed");
+                }
+            
+              });
+
+            
+     
+            }
+
+
+            function Cache(keyArr){
+                keyArr.forEach((key)=>{
+                    localStorage.setItem(key, JSON.stringify({username:data.username,email:data.email}));
+                });
+            }
+       
+});
+   
+
+
+</script>
 
 </html>

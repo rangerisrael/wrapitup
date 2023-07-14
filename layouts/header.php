@@ -55,7 +55,8 @@ if(isset($_GET['search']) == true) {
     <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="shortcut icon" type="image/x-icon" href="assets/image/wrapitup-logo.jpg">
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css" rel="stylesheet">
+     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-DWTCPK0QT1"></script>
     <script>
     window.dataLayer = window.dataLayer || [];
@@ -66,6 +67,90 @@ if(isset($_GET['search']) == true) {
     </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7006703530854355"
      crossorigin="anonymous"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
      
-     
+  <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+
+<script>
+  // Enable pusher logging - don't include this in production
+  // Pusher.logToConsole = true;
+
+  var pusher = new Pusher('49f045793f7158a8e0e3', {
+    cluster: 'ap1'
+  });
+
+  pusher.connection.bind('connected', function () {
+    console.log('Pusher connected');
+  });
+
+  var channel = pusher.subscribe('my-channel');
+  channel.bind('my-event', function (data) {
+    // console.log('Data received');
+    // console.log(data);
+    
+    // Extract the user ID from the data object received from Pusher
+    var userId = data.user_id;
+    
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    
+    // Perform the AJAX call using the user ID
+    $.ajax({
+      url: './mail/get-user.php',
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      async: false,
+      cache: false,
+      dataType: 'json',
+      success: function (response) {
+
+    
+        // console.log(response, 'get response');
+        // console.log(data, 'get data');
+        if (response.success === true) {
+        
+        let getStatus = Number(data.status);
+        let getStatusColor = getStatus === 0 ? 'text-warning': getStatus === 4 ? 'text-danger' : 'text-success';
+        
+
+        document.getElementById("reference").innerText = data.reference; // Replace with the appropriate reference value
+        document.getElementById("status").innerText = getStatus === 0 ? 'Pending' : getStatus === 1 ? 'Processing' : getStatus === 2 ? 'Completed' : getStatus === 3 ? 'Out For Delivery' : 'Cancelled'; // Replace with the appropriate status value
+        document.getElementById('status').classList.add(getStatusColor);
+        document.getElementById('badge').innerText = data.count ?? 0;
+        document.getElementById('product').innerHTML = data.product.map((item)=> {
+          return `
+            <td><span class="pr-2">${item.product}</span></td>
+            <td><span>${item.price}</span></td>
+            <tr>
+          `
+
+        });
+ 
+                                
+
+      // Open the modal using JavaScript
+         $('#myModal').modal('show');
+          
+        }
+      },
+      error: function (response) {
+        console.log('Failed');
+      }
+    });
+  });
+
+
+   function closeModal() {
+      // Close the modal using JavaScript
+      $('#myModal').modal('hide');
+      location.reload();
+    }
+</script>
+
+
 </head>
+
+
+  

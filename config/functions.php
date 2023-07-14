@@ -1,34 +1,91 @@
 <?php
 include 'database.php';
+require __DIR__ . '/vendor/autoload.php';
+
 
 function login($username,$password,$role) {
     global $db;
-    $check = $db->query("SELECT * FROM accounts WHERE username = '$username' AND status = 0 AND role = $role"); // validate if username already exist
+    $check = $db->query("SELECT * FROM accounts WHERE username = '$username' OR email='$username' AND status = 0 "); // validate if username already exist
     if($check->num_rows > 0) {
         $row = $check->fetch_assoc();
         if(password_verify($password,$row['password'])) {
-            $_SESSION['role'] = $row['role'];
-            if($row['role']   == 0) {
-                $_SESSION['administrator'] = 1;
-                $_SESSION['admin_id']   = $row['id'];
-                header('location: dashboard.php');
-            } else {
-                $_SESSION['customer'] = 1;
-                $_SESSION['id']   = $row['id'];
-                header('location: my-account.php');
+            
+
+            if($row['is_verify'] == 0){
+                header('location: verification.php?username='.$row['username'].'&email=' . $row['email'] . '&success=false&message=' . urlencode('Your account is not yet verified. Please check your email for verification'));
             }
+
+            else{
+
+                $_SESSION['role'] = $row['role'];
+                if ($row['role'] == 0) {
+                    $_SESSION['administrator'] = 1;
+                    $_SESSION['admin_id'] = $row['id'];
+                //    if($role === '1'){
+                //         header('location: admin/dashboard.php');
+                //    }
+                //    else{
+                        header('location: dashboard.php');
+                //    }
+                }
+                else if ($row['role'] == 2) {
+                  
+
+                    if($role == 2){
+                     $_SESSION['customer'] = 2;
+                     $_SESSION['id'] = $row['id'];
+
+                        echo json_encode(array("success" => true,'role' => 2));
+
+                     }
+                    if($role == 1){
+                        echo json_encode(array("success" => true,'role' => 2));
+                    }
+
+                    
+                    if($role == 0){
+                        $_SESSION['administrator'] = 2;
+                        $_SESSION['admin_id'] = $row['id'];
+                        header('location: dashboard.php');
+
+                    }
+
+                      
+
+                    
+                    //    }
+                }
+                
+                else {
+
+                    if($role == 1){
+                        $_SESSION['customer'] = 1;
+                        $_SESSION['id'] = $row['id'];
+
+                        echo json_encode(array("success" => true,'role' => 1));
+                    }
+                    if ($role == 2) {
+                        echo json_encode(array("success" => true, 'role' => 1));
+                    }
+                  
+                   
+                   
+                }
+            }
+
+          
         } else {
             if($role == 0) {
                 header('location: index.php?success=false&message='.urlencode('Invalid username or password'));
             } else {
-                header('location: login.php?success=false&message='.urlencode('Invalid username or password'));
+                echo json_encode(array("success" => false));
             }
         }
     } else {
         if($role == 0) {
             header('location: index.php?success=false&message='.urlencode('Invalid username or password'));
         } else {
-            header('location: login.php?success=false&message='.urlencode('Invalid username or password'));
+            echo json_encode(array("success" => false));
         }
     }
 }
@@ -44,11 +101,11 @@ function logout() {
     header('location: home.php');
 }
 
-function create_new_account($email,$username,$pwd) {
+function create_new_account($email,$username,$pwd,$code) {
     global $db;
     $check = $db->query("SELECT * FROM accounts WHERE email = '$email'"); // validate if email already exist
     if($check->num_rows > 0) {
-        header('location: register.php?success=false&message='.urlencode('Email already exist'));
+        echo json_encode(array("exist" => true));
     } else {
         // roles: 
         // 0 = admin
@@ -56,13 +113,62 @@ function create_new_account($email,$username,$pwd) {
         $month    = date('n');
         $year     = date('Y');
         $password = password_hash($pwd,PASSWORD_DEFAULT);
-        $query    = $db->query("INSERT INTO accounts (email,username,password,role,status,month,year) VALUES ('$email','$username','$password','1',0,$month,$year)");
+        $query    = $db->query("INSERT INTO accounts (email,username,password,role,status,month,year,verify_code,is_verify) VALUES ('$email','$username','$password','1',0,$month,$year,$code,0)");
         if($query) {
-            header('location: login.php?success=true&message='.urlencode('Your account has been created'));
+            echo json_encode(array("success" => true));
+
         } else {
             echo $db->error;
             exit;
         }
+    }
+}
+
+
+function reset_code($email, $code)
+{
+    global $db;
+    $check = $db->query("SELECT * FROM accounts WHERE email = '$email'"); // validate if email already exist
+
+    $result = $check->fetch_assoc();
+    $verifyCode = $result['verify_code'];
+
+
+    if ($check->num_rows > 0 && $result['is_verify'] == 0) {
+
+
+        $db->query("UPDATE accounts SET verify_code =$code WHERE email = '$email'");
+
+
+        echo json_encode(array("success" => true));
+    } else {
+
+        echo json_encode(array("success" => false));
+
+    }
+}
+
+function update_code($email,$code){
+    global $db;
+    $check = $db->query("SELECT * FROM accounts WHERE email = '$email'"); // validate if email already exist
+
+    $result = $check->fetch_assoc();
+    $verifyCode = $result['verify_code'];
+    $verify = $result['is_verify'];
+
+
+    if($check->num_rows > 0 && strval($verifyCode) == $code && $verify == 0 ) {
+
+ 
+     $db->query("UPDATE accounts SET verify_code ='',is_verify= true WHERE email = '$email'");
+
+
+        echo json_encode(array("success" => true));
+    } else {
+
+        echo json_encode(array("success" => false));
+
+
     }
 }
 
@@ -76,6 +182,27 @@ function get_all_customer($from,$to) {
     return $query;
 }
 
+function get_all_staff($from, $to)
+{
+    global $db;
+    if (empty($from) && empty($to)) {
+        $query = $db->query("SELECT * FROM accounts WHERE role = 2");
+    } else {
+        $query = $db->query("SELECT * FROM accounts WHERE role = 2 AND created_at BETWEEN '$from' AND '$to'");
+    }
+    return $query;
+}
+
+function get_individual_staff($from, $to,$id)
+{
+    global $db;
+    if (empty($from) && empty($to)) {
+        $query = $db->query("SELECT * FROM accounts WHERE role = 2 AND id='$id'");
+    } else {
+        $query = $db->query("SELECT * FROM accounts WHERE role = 2 AND created_at BETWEEN '$from' AND '$to' AND id='$id'");
+    }
+    return $query;
+}
 
 function get_maritals($from,$to) {
     global $db;
@@ -130,8 +257,26 @@ function get_all_payments($from,$to) {
 function account_details($id) {
     global $db;
     $query = $db->query("SELECT * FROM accounts WHERE id = $id");
+
+    
     return $query;  
 }
+
+
+function get_account_user($id)
+{
+    global $db;
+    $query = $db->query("SELECT * FROM accounts WHERE id = $id");
+
+    if($query->num_rows > 0) {
+       echo json_encode(array("success" => true));
+    } else {
+      echo json_encode(array("success" => false));
+
+    }
+
+}
+
 
 function update_account_details($firstname,$surname,$email,$contact,$birthday,$age,$gender,$marital) {
     global $db;
@@ -202,6 +347,14 @@ function my_orders() {
     $query = $db->query("SELECT *, SUM(price * quantity) as total, SUM(quantity) as items FROM transaction WHERE accounts_id = ".$_SESSION['id']." GROUP BY reference ORDER BY created_at DESC ");
     return $query;  
 }
+
+function assisted_staff_orders()
+{
+    global $db;
+    $query = $db->query("SELECT t.*, SUM(t.price * t.quantity) as total, SUM(t.quantity) as items, a.email as email FROM transaction t, accounts a WHERE a.id =" . $_SESSION['id'] . " AND t.assisted_by = " . $_SESSION['id'] . " GROUP BY reference ORDER BY created_at DESC ");
+    return $query;
+}
+
 
 function view_orders() {
     global $db;
@@ -287,11 +440,120 @@ function count_female($month,$year) {
     return $query->num_rows;  
 }
 
-function update_transaction_status($reference,$status) {
+function update_transaction_status($reference,$status,$id,$product) {
+
+    $productDetails = isset($_SESSION['product_order']) ? $_SESSION['product_order'] : [];
+    $productItem = isset($_SESSION['product_item']) ? $_SESSION['product_item'] : '';
+    $productPrice = isset($_SESSION['product_price']) ? $_SESSION['product_price'] : '';
+
+
+
+
     global $db;
     $query = $db->query("UPDATE transaction SET status = $status WHERE reference = '$reference'");
-    header('location: orders.php?reference='.$reference.'&success=true&message='.urlencode('Status has been updated'));
+    pushNotification(array('title' => 'Order Status', 'message' => 'Your order status has been updated', 'reference' => $reference, 'user_id' => $id,'status' => $status,'product' => $productDetails,'price' => $productPrice,'productItem' => $productItem));
+  
+    header('location: orders.php?reference='.$reference.'&success=true&product='.$product.'&message='.urlencode('Status has been updated'));
 }
+
+function pushNotification($payload){
+
+
+    $userId = $payload['user_id'];
+    $ref = $payload['reference'];
+    $stat = $payload['status'];
+    $productItem = $payload['productItem'];
+    $prices = $payload['price'];
+
+
+    global $db;
+
+    $count = 0;
+
+   
+    $notificationCount = $db->query("SELECT COUNT(*) as listNotification FROM order_notification  WHERE user_id = $userId ORDER BY date_created DESC" );
+  
+ 
+
+    if ($notificationCount->num_rows > 0) {
+        $countItems = $notificationCount->fetch_assoc();
+       $count = $countItems['listNotification'];
+    } else {
+       $count = 0;
+    }
+
+    $options = array(
+        'cluster' => 'ap1',
+        'useTLS' => true
+    );
+    $pusher = new Pusher\Pusher(
+        '49f045793f7158a8e0e3',
+        '98ff9a54ca0dbbdf44aa',
+        '1632345',
+        $options
+    );
+
+    $data['title'] = $payload['title'];
+    $data['message'] = $payload['message'];
+    $data['reference'] = $payload['reference'];
+    $data['user_id'] = $payload['user_id'];
+    $data['status'] = $payload['status'];
+    $data['count'] = number_format($count) + 1;
+    $data['product'] = $payload['product'];
+
+    $pusher->trigger('my-channel', 'my-event', $data);
+
+   
+  $db->query("INSERT INTO order_notification (user_id,reference_number,status,read_msg,product_item,product_price) VALUES ('$userId','$ref','$stat',0,'$productItem','$prices')");
+
+
+
+
+}
+
+function getCountNotification($userId){
+
+    global $db;
+
+   if($userId != ''){
+     $notificationCount = $db->query("SELECT COUNT(*) as listNotification FROM order_notification  WHERE user_id = $userId");
+
+   $countList = 0;
+
+    if ($notificationCount->num_rows > 0) {
+        $countItems = $notificationCount->fetch_assoc();
+        $countList = $countItems['listNotification'];
+    } else {
+        $countList = 0;
+    }
+
+    return $countList;
+   }
+}
+
+function getNotification($userId)
+{
+    global $db;
+    $query = $db->query("SELECT * FROM order_notification  WHERE user_id = $userId ORDER BY date_created DESC");
+    return $query;
+}
+
+function deleteNotification($id){
+    global $db;
+    $query = $db->query("DELETE FROM order_notification WHERE id = $id");
+    
+    echo json_encode(array('status' => 'success'));
+}
+
+function deleteNotificationAll()
+{
+    global $db;
+    $query = $db->query("DELETE FROM order_notification");
+
+    echo json_encode(array('status' => 'success'));
+}
+
+
 
 function get_all_sales_transaction() {
     global $db;
@@ -381,7 +643,7 @@ function delete_receipt($reference) {
 
 
 
-function transaction($shipping_trigger,$method_of_payment,$notes) {
+function transaction($shipping_trigger,$method_of_payment,$notes,$shipping_fee = 0) {
     global $db;
     $reference      = reference(10);
     $accounts_id    = $_SESSION['id'];
@@ -393,7 +655,7 @@ function transaction($shipping_trigger,$method_of_payment,$notes) {
         $product_id = $value['id'];
         $title      = $value['title'];
         $quantity   = $value['quantity'];
-        $price      = $value['price'];
+        $price      = $value['price'] +  number_format($shipping_fee,2);
         $query      = $db->query("INSERT INTO transaction (accounts_id,product,quantity,price,method_of_payment,status,reference,notes,shipping_trigger,month,year) VALUES ($accounts_id,'$title',$quantity,'$price','$method_of_payment','$status','$reference','$notes','$shipping_trigger','$month','$year')");
 
         if($query) {
@@ -403,6 +665,102 @@ function transaction($shipping_trigger,$method_of_payment,$notes) {
     }
     unset($_SESSION['cart']);
     header('location: my-account.php');
+}
+
+function  staffTransaction($firstname,$lastname,$email,$contact,$country,$address,$city,$state,$zip_code,$method_of_payment,$notes,$shipping_fee){
+    // create account for user
+    global $db;
+    
+    $checkUserExist = $db->query("SELECT * FROM accounts WHERE email = '$email'  ");
+
+    if($checkUserExist->num_rows > 0){
+
+        $reference = reference(10);
+        $recent_id = $checkUserExist->fetch_assoc()['id'];
+        $status = 0;
+        $date = date('Y-m-d');
+        $month = date('n', strtotime($date));
+        $year = date('Y', strtotime($date));
+        $assistedStaff = $_SESSION['id'];
+
+        
+        foreach ($_SESSION['cart'] as $key => $value) {
+            $product_id = $value['id'];
+            $title = $value['title'];
+            $quantity = $value['quantity'];
+            $price = $value['price'] + number_format($shipping_fee, 2);
+            $query = $db->query("INSERT INTO transaction (accounts_id,product,quantity,price,method_of_payment,status,reference,notes,shipping_trigger,month,year,transaction_type,assisted_by) VALUES ($recent_id,'$title',$quantity,'$price','$method_of_payment','$status','$reference','$notes','No','$month','$year','walked_in','$assistedStaff')");
+
+            if ($query) {
+                $db->query("UPDATE product SET stocks=stocks-$quantity WHERE id =" . $product_id);
+            }
+
+        }
+
+        unset($_SESSION['cart']);
+
+        echo json_encode(array("success" => true, "message" => "Transaction Successfull", "ref" => $reference, "passcode" => 'Account_existed', "username" => 'Account_existed', "email" => $email));
+    }
+    else{
+     
+        $genUseName = $firstname.reference(5);
+        $pwd = reference(5);
+        $password = password_hash($pwd,PASSWORD_DEFAULT);
+        $query    = $db->query("INSERT INTO accounts (firstname,surname,email,contact,username,password,role,is_verify) VALUES ('$firstname','$lastname','$email','$contact','$genUseName','$password',1,1)");
+        if ($query) {
+
+            $getRecentId = number_format($db->insert_id,0);
+
+             $billingAddress = $db->query("INSERT INTO accounts_address (accounts_id,shipping_firstname,shipping_surname,contact,country,city,state,address,zip,category) VALUES ($getRecentId,'$firstname','$lastname','$contact','$country','$city','$state','$address','$zip_code','Billing Address')");
+
+
+             if($billingAddress){
+             
+                $reference = reference(10);
+                $accounts_id = $getRecentId;
+                $status = 0;
+                $date = date('Y-m-d');
+                $month = date('n', strtotime($date));
+                $year = date('Y', strtotime($date));
+                $assistedStaff = $_SESSION['id'];
+                foreach ($_SESSION['cart'] as $key => $value) {
+                    $product_id = $value['id'];
+                    $title = $value['title'];
+                    $quantity = $value['quantity'];
+                    $price = $value['price'] + number_format($shipping_fee, 2);
+                    $query = $db->query("INSERT INTO transaction (accounts_id,product,quantity,price,method_of_payment,status,reference,notes,shipping_trigger,month,year,transaction_type,assisted_by) VALUES ($accounts_id,'$title',$quantity,'$price','$method_of_payment','$status','$reference','$notes','No','$month','$year','walked_in','$assistedStaff')");
+
+                    if ($query) {
+                        $db->query("UPDATE product SET stocks=stocks-$quantity WHERE id =" . $product_id);
+                    }
+
+                }
+                
+                unset($_SESSION['cart']);
+
+                echo json_encode(array("success" => true, "message" => "Transaction Successfull", "ref" => $reference, "passcode" => $pwd, "username" => $genUseName, "email" => $email));
+             }
+         
+
+
+          
+
+        } else {
+            echo $db->error;
+            exit;
+        }
+    }
+
+
+
+
+    // insert to account address
+
+
+
+    // insert to transaction user id
+    // update product stock
+
 }
 
 
@@ -909,9 +1267,169 @@ function save_reviews($transcId,$transcName,$name,$email,$ratings,$reviews,$file
    
 }
 
+function get_staff($id)
+{
+    global $db;
+    $query = $db->query("SELECT *   FROM accounts WHERE id = '$id' ");
+    $data=  $query->num_rows;
+    if($data > 0){
+        $get_record = $query->fetch_assoc();
+        unset($get_record['password']);
+        
+        echo json_encode($get_record);
+    }
+}
+
+
+
+function  addNewStaff($email, $fname, $lname, $username, $password, $contact, $bday, $age,$gender){
+    global $db;
+
+    $check = $db->query("SELECT * FROM accounts WHERE email= '$email' OR username = '$username'");
+
+    if($check->num_rows > 0){
+        echo json_encode(array("success" => 'exist'));
+    }
+    else{
+
+        $hashPassWord = password_hash($password, PASSWORD_DEFAULT);
+
+        $month = date('n');
+        $year = date('Y');
+
+        $query = $db->query("INSERT INTO accounts (firstname,surname,email,contact,birthday,age,gender,username,password,role,status,month,year,verify_code,is_verify) VALUES ('$fname','$lname','$email','$contact','$bday','$age','$gender','$username','$hashPassWord','2',0,$month,$year,'','')");
+        if ($query) {
+            echo json_encode(array("success" => 'valid'));
+
+        } else {
+            echo $db->error;
+            exit;
+        }
+      
+    }
+}
+
+
+function updateStaff($id,$email, $fname, $lname, $username, $contact, $bday, $age,$gender){
+    global $db;
+
+    $check = $db->query("SELECT * FROM accounts WHERE id = $id");
+
+    if($check->num_rows > 0){
+
+        $query = $db->query("UPDATE  accounts SET firstname = '$fname',surname= '$lname', email = '$email', contact = '$contact', birthday = '$bday', age = '$age', gender = '$gender', username = '$username' WHERE id = '$id' ");
+        if ($query) {
+            echo json_encode(array("success" => 'valid'));
+
+        } else {
+            echo $db->error;
+            exit;
+        }
+    }
+    else{
+
+        echo json_encode(array("success" => 'not-exist'));
+
+           
+    }
+}
+
+function delete_staff($id)
+{
+    global $db;
+    $check = $db->query('SELECT * FROM accounts WHERE id = '.$id.' ');
+
+    if($check->num_rows > 0){
+        $query = $db->query('DELETE FROM accounts WHERE id = '.$id.' ');
+        if($query){
+            echo json_encode(array("status" => 'valid'));
+        }
+        else{
+            echo json_encode(array("status" => 'invalid'));
+        }
+    }
+    else{
+        echo json_encode(array("status" => 'not-exist'));
+    }
+}
+
+
+
+
+
+
+
 function validate($data) { // Input fields validator to avoid XSS and SQL Injection
    $data = trim($data); // remove extra white space(s)
    $data = stripslashes($data); // remove forward and back slashes
    $data = htmlspecialchars($data); // remove special characters
    return $data;
+}
+
+
+
+function timeAgo($time_ago)
+{
+    $time_ago = strtotime($time_ago);
+    $cur_time = time();
+    $time_elapsed = $cur_time - $time_ago;
+    $seconds = $time_elapsed;
+    $minutes = round($time_elapsed / 60);
+    $hours = round($time_elapsed / 3600);
+    $days = round($time_elapsed / 86400);
+    $weeks = round($time_elapsed / 604800);
+    $months = round($time_elapsed / 2600640);
+    $years = round($time_elapsed / 31207680);
+    // Seconds
+    if ($seconds <= 60) {
+        return "just now";
+    }
+    //Minutes
+    else if ($minutes <= 60) {
+        if ($minutes == 1) {
+            return "one minute ago";
+        } else {
+            return "$minutes minutes ago";
+        }
+    }
+    //Hours
+    else if ($hours <= 24) {
+        if ($hours == 1) {
+            return "an hour ago";
+        } else {
+            return "$hours hrs ago";
+        }
+    }
+    //Days
+    else if ($days <= 7) {
+        if ($days == 1) {
+            return "yesterday";
+        } else {
+            return "$days days ago";
+        }
+    }
+    //Weeks
+    else if ($weeks <= 4.3) {
+        if ($weeks == 1) {
+            return "a week ago";
+        } else {
+            return "$weeks weeks ago";
+        }
+    }
+    //Months
+    else if ($months <= 12) {
+        if ($months == 1) {
+            return "a month ago";
+        } else {
+            return "$months months ago";
+        }
+    }
+    //Years
+    else {
+        if ($years == 1) {
+            return "one year ago";
+        } else {
+            return "$years years ago";
+        }
+    }
 }
